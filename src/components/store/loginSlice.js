@@ -3,18 +3,18 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 // Async thunk for login
 export const loginCall = createAsyncThunk('login', async (user) => {
-    const res = await axios.post('http://localhost:8080/api/v1/login',user);
+    const res = await axios.post('login',user);
     return res.data;
 });
 
 export const refreshApiCall = createAsyncThunk('refreshApiCall', async () => {
-    const res = await axios.get('http://localhost:8080/api/v1/refreshApi');
+    const res = await axios.get('refreshApi');
     return res.data;
 });
 
 
 export const logoutApiCall = createAsyncThunk('logout', async (user) => {
-    const res = await axios.post('http://localhost:8080/api/v1/logout',user);
+    const res = await axios.post('logout',user);
     return res.data;
 });
 

@@ -3,7 +3,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 
 export const posts = createAsyncThunk('posts', async (user) => {
-    const res = await axios.get('http://localhost:8080/api/v1/post/list',user);
+    const res = await axios.get('post/list',user);
     return res.data;
 });
 

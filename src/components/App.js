@@ -10,6 +10,12 @@ import Result from "./pages/Result";
 import Dashbord from './pages/Dashbord';
 import PrivateRoute from './PrivateRoute';
 import PublicRoute from "./PublicRoute";
+import axios from 'axios';
+
+/**
+ * Axios HTTP Request defaults
+ */
+axios.defaults.baseURL = `${process.env.REACT_APP_API_URL}`;
 
 function App() {
   return (
