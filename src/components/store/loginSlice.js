@@ -1,6 +1,12 @@
 import axios from 'axios';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
+// Async thunk for singup
+export const registerApiCall = createAsyncThunk('registerApiCall', async (user) => {
+        const res = await axios.post('register', user);
+        return res.data; // Returns the successful response
+});
+
 // Async thunk for login
 export const loginCall = createAsyncThunk('login', async (user) => {
     const res = await axios.post('login',user);
@@ -23,8 +29,15 @@ const loginSlice = createSlice({
     name: 'login',
     initialState:{
         user: [],
+        error: null,  // To store error messages
     },
     extraReducers: (builder) => {
+        builder.addCase(registerApiCall.fulfilled, (state, action) => {
+            return action.payload;
+        });
+        builder.addCase(registerApiCall.rejected, (state, action) => {
+            state.error = action.error.message;
+        });
         builder.addCase(loginCall.fulfilled, (state, action) => {
             // return action.payload;
             state.user = action.payload.data.user;

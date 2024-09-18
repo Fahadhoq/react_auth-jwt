@@ -30,7 +30,7 @@ export default function Login() {
 
       <div className="column">
         <Illustration />
-        <Form className={`${classes.login}`}>
+        <Form className={`${classes.login}`} >
           <TextInput
             type="text"
             placeholder="Enter email"
@@ -42,7 +42,9 @@ export default function Login() {
           <TextInput type="password" placeholder="Enter password" icon="lock" id='password' name="password"
             value={password} onChange={(e)=>setPassword(e.target.value)} required />
 
-          <button type="submit" onClick={handleSubmit}>Submit</button>
+          <Button onClick={handleSubmit}>
+            <span>Submit</span>
+          </Button>
 
           <div className="info">
             Don't have an account? <Link to="/signup">Signup</Link> instead.

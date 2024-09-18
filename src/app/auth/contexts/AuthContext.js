@@ -1,7 +1,7 @@
 
 import React, { useContext, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import {loginCall, logoutApiCall, refreshApiCall} from "../../../components/store/loginSlice";
+import { useDispatch, useSelector } from "react-redux";
+import {loginCall, logoutApiCall, refreshApiCall, registerApiCall} from "../../../components/store/loginSlice";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -14,6 +14,7 @@ import axios from "axios";
   export function AuthProvider({ children }) {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const error = useSelector((state)=> state.login.error)
     const [loading, setLoading] = useState(true);
     const [currentUser, setCurrentUser] = useState([]);
     const jwt_access_token = localStorage.getItem('jwt_access_token');
@@ -34,6 +35,47 @@ import axios from "axios";
           setLoading(false);
         }
     }, [dispatch]);
+
+
+    // singup function
+    function singup(user) {
+      dispatch(registerApiCall(user))
+      .then(res => {        
+        if (res.payload) {
+          if (res.payload.success) {
+            alert(res.payload.data.message)
+            navigate('/login')
+          } else {
+            if (res.payload.data.type == 'validation') {
+                const extractMessages = (obj) => {
+                  let messages = [];
+                  // Extract messages from the top-level keys
+                  for (let key in obj) {
+                      if (obj.hasOwnProperty(key) && key !== 'message') {
+                          messages = messages.concat(obj[key]);
+                      }
+                  }
+                  // Flattening messages in case they are arrays of arrays
+                  return messages.flat();
+                };
+              
+                const obj = res.payload.data.message;
+                const combinedMessages = extractMessages(obj);
+                if (combinedMessages.length > 0) {
+                  alert(combinedMessages.join('\n'));
+                  return;
+                }
+            }else{
+              alert(res.payload.data.message)
+              return;
+            }
+          }
+        } else {
+          alert(error)
+          return;
+        }
+      },[]);
+    }
 
   
     // login function
@@ -77,6 +119,7 @@ import axios from "axios";
   
     const value = {
       currentUser,
+      singup,
       login,
       logout
     };
