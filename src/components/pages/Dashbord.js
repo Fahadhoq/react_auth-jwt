@@ -7,7 +7,6 @@ import { posts } from "../store/postSlice";
 
 export default function Dashbord() {
   const user = useSelector((state) => state.login.user);
-
   const dispatch = useDispatch();
 
   const [email, setEmail] = useState('');

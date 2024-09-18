@@ -15,24 +15,33 @@ import axios from "axios";
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
+    const [currentUser, setCurrentUser] = useState([]);
     const jwt_access_token = localStorage.getItem('jwt_access_token');
 
 
     useEffect(() => {
         if (jwt_access_token) {
-            refresh();  
+            setSession(jwt_access_token);
+            dispatch(refreshApiCall())
+            .then(res => {
+              if (res.payload) {
+                setCurrentUser(res.payload.data.user);
+                setSession(res.payload?.data.token);
+                setLoading(false);
+              }
+            },[]);
+        }else{
+          setLoading(false);
         }
-        setLoading(false);
     }, [dispatch]);
 
-  
-    
   
     // login function
     function login(user) {
         dispatch(loginCall(user))
         .then(res => {
           if (res.payload.success) {
+            setCurrentUser(res.payload.data.user);
             setSession(res.payload?.data.token);
             navigate('/dashbord')
           } else {
@@ -41,22 +50,7 @@ import axios from "axios";
         },[]);
     }
 
-    //refreshApi
-    const refresh = () => {
-        setSession(jwt_access_token);
-        setLoading(true);
-        
-        dispatch(refreshApiCall())
-        .then(res => {
-          if (res.payload) {
-            setSession(res.payload?.data.token);
-            setLoading(false);
-          }
-        },[]);
-      };
-
-    
-    
+  
     //set session
     function setSession(access_token){
         if (access_token) {
@@ -70,17 +64,19 @@ import axios from "axios";
         }
     };
 
+
+    // logout function
     function logout () {
         dispatch(logoutApiCall())
         .then(res => {
             setSession(null);
             navigate('/',{replace:true})
         },[]);
-      };
-  
-    
+    };
+
   
     const value = {
+      currentUser,
       login,
       logout
     };
