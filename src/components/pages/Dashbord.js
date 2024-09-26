@@ -1,13 +1,18 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { login } from "../store/loginSlice";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useAuth } from "../../app/auth/contexts/AuthContext";
 import { posts,iamge } from "../store/postSlice";
 import EditIcon from '@mui/icons-material/Edit';
 import ReactImagePickerEditor from 'react-image-picker-editor';
 import signupImage from "../../assets/images/logo-bg.png";
 import { SnackbarProvider, useSnackbar } from 'notistack';
+import PrintPreviewModel from "../print/PrintPreviewModel";
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import PrintIcon from '@mui/icons-material/Print';
+import { useReactToPrint } from 'react-to-print';
+import PrintModel2 from "../print/PrintModel2";
 
 export default function Dashbord() {
   const user = useSelector((state) => state.login.user);
@@ -16,11 +21,13 @@ export default function Dashbord() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [postList, setPostList] = useState([]);
 
   const handleSubmit = () => {
     dispatch(posts())
     .then(res => {
       console.log('dashbord',res);
+      setPostList(res.payload.data)
     });
   }
 
@@ -130,13 +137,47 @@ export default function Dashbord() {
         }
       })
   }
+
+  //print and pdf
+  const [openPreview, setOpenPreview] = useState(false)
+
+
+  // print 1
+  const contentToPrint = useRef(null);
+  const handlePrint1 = useReactToPrint({
+    documentTitle: "Print This Document",
+    onBeforePrint: () => console.log("before printing..."),
+    onAfterPrint: () => console.log("after printing..."),
+    removeAfterPrint: true,
+  });
+
+  // print 2
+  const [printModal, setPrintModal] = useState(false);
+  function handlePrint2(id) {
+    setPrintModal(true)
+  }
+
   
   return (
     <>
+    {/* print and pdf*/}
+    <PrintPreviewModel
+        open={openPreview}
+        setOpen={setOpenPreview}
+        user={user}
+        postList={postList}
+    />
+
+    {/* print 2 */}
+    <PrintModel2
+        open={printModal}
+        setOpen={setPrintModal}
+        postList={postList}
+    />
+
     <div>
       <div>
         <p>{user && user.name} Dashbord</p>
-        <button type="submit" onClick={handleSubmit}>Get Post Data</button> 
       </div>
       <div>
         <h1>Image Add And Edit</h1>
@@ -156,6 +197,29 @@ export default function Dashbord() {
             />
         }
         <button type="submit" onClick={SaveImage}>Save Image</button> 
+      </div>
+      <div>
+        <h1>Print And PDF</h1>
+        <button type="submit" onClick={handleSubmit}>Get Post Data</button> 
+    
+        <button className="bg-blue text-white rounded py-6 px-14 md:ml-16" onClick={() => { setOpenPreview(true) }}>
+            <PictureAsPdfIcon />
+            PDF
+        </button>
+         
+         {/* print 1 */}
+         <div ref={contentToPrint}>Hello Again</div>
+            <button onClick={() => {
+              handlePrint1(null, () => contentToPrint.current);
+            }}>
+              PRINT 1
+          </button>
+
+          {/* print 2 */}
+          <button className="bg-blue text-white rounded py-6 px-14 md:ml-16" onClick={() => { handlePrint2(true) }}>
+            <PrintIcon />
+            PRINT 2
+        </button>
       </div>
     </div>
     </>
